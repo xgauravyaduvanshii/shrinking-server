@@ -1,4 +1,4 @@
-name: Draft release
+name: Draft shrinking-server release
 
 on:
   workflow_dispatch:
@@ -6,10 +6,12 @@ on:
       version:
         type: string
         required: true
+  push:
+    tags:
+      - "v*"
 
 permissions:
-  contents: write # For creating releases.
-  discussions: write #  For creating a discussion.
+  contents: write
 
 # Cancel in-progress runs for pull requests when developers push
 # additional changes
@@ -99,7 +101,6 @@ jobs:
         if: ${{ matrix.vscode_arch == 'x64' }}
         with:
           draft: true
-          discussion_category_name: "📣 Announcements"
           files: package.tar.gz
 
       # Platform-specific release.
@@ -108,7 +109,6 @@ jobs:
       - uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v1
         with:
           draft: true
-          discussion_category_name: "📣 Announcements"
           files: ./release-packages/*
 
   package-macos:
@@ -164,5 +164,4 @@ jobs:
       - uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v1
         with:
           draft: true
-          discussion_category_name: "📣 Announcements"
           files: ./release-packages/*

@@ -7,11 +7,11 @@ variable "VERSION" {
 }
 
 variable "DOCKER_REGISTRY" {
-    default = "docker.io/codercom/code-server"
+    default = "docker.io/xgauravyaduvanshii/shrinking-server"
 }
 
 variable "GITHUB_REGISTRY" {
-    default = "ghcr.io/coder/code-server"
+    default = "ghcr.io/xgauravyaduvanshii/shrinking-server"
 }
 
 group "default" {
