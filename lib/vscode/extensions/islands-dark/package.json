@@ -1,0 +1,34 @@
+{
+  "name": "islands-dark",
+  "displayName": "Islands Dark",
+  "description": "A dark color theme inspired by JetBrains Islands Dark — deep backgrounds, warm syntax highlighting, and a clean modern aesthetic.",
+  "version": "0.0.2",
+  "publisher": "bwya77",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Themes"
+  ],
+  "keywords": [
+    "dark",
+    "theme",
+    "islands",
+    "jetbrains",
+    "color theme"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bwya77/vscode-dark-islands"
+  },
+  "contributes": {
+    "themes": [
+      {
+        "label": "Islands Dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/islands-dark.json"
+      }
+    ]
+  }
+}

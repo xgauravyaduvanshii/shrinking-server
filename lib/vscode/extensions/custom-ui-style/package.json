@@ -1,0 +1,296 @@
+{
+  "publisher": "subframe7536",
+  "name": "custom-ui-style",
+  "displayName": "Custom UI Style",
+  "type": "commonjs",
+  "version": "0.6.8",
+  "private": true,
+  "packageManager": "pnpm@10.12.1",
+  "description": "Custom ui css style in both editor and webview, unify global font family, setup background image",
+  "author": "subframe7536 <1667077010@qq.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/subframe7536/vscode-custom-ui-style#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/subframe7536/vscode-custom-ui-style"
+  },
+  "bugs": {
+    "url": "https://github.com/subframe7536/vscode-custom-ui-style/issues"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./dist/index.js",
+  "icon": "res/icon.png",
+  "files": [
+    "LICENSE.md",
+    "dist/*",
+    "res/**/*"
+  ],
+  "engines": {
+    "vscode": "^1.89.0"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "extensionKind": [
+    "ui"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "custom-ui-style.reload",
+        "title": "Reload",
+        "category": "Custom UI Style"
+      },
+      {
+        "command": "custom-ui-style.rollback",
+        "title": "Rollback",
+        "category": "Custom UI Style"
+      },
+      {
+        "command": "custom-ui-style.cleanup",
+        "title": "Rollback, cleanup and restart instantly",
+        "category": "Custom UI Style"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Custom UI Style",
+      "properties": {
+        "custom-ui-style.preferRestart": {
+          "scope": "resource",
+          "type": "boolean",
+          "description": "Prefer restarting VSCode after updates (always true for VSCode >= 1.95.0)",
+          "default": false
+        },
+        "custom-ui-style.reloadWithoutPrompting": {
+          "scope": "resource",
+          "type": "boolean",
+          "description": "Reload/restart immediately without a notification prompt",
+          "default": false
+        },
+        "custom-ui-style.watch": {
+          "scope": "resource",
+          "type": "boolean",
+          "description": "Automatically reload window on configuration changes (ignores imports)",
+          "default": true
+        },
+        "custom-ui-style.electron": {
+          "scope": "application",
+          "type": "object",
+          "description": "Electron BrowserWindow options (see Electron documentation)"
+        },
+        "custom-ui-style.font.monospace": {
+          "scope": "application",
+          "type": "string",
+          "description": "Global monospace font family for editor and webviews (falls back to editor's font)"
+        },
+        "custom-ui-style.font.sansSerif": {
+          "scope": "application",
+          "type": "string",
+          "description": "Global sans-serif font family for editor and webviews"
+        },
+        "custom-ui-style.preset": {
+          "scope": "application",
+          "type": "string",
+          "enum": [
+            "none",
+            "islands-dark"
+          ],
+          "description": "Bundled preset that ships extension-local fonts and CSS helpers",
+          "default": "none"
+        },
+        "custom-ui-style.background.url": {
+          "scope": "machine",
+          "type": "string",
+          "description": "Full-screen background image URL (e.g., 'https://', 'file://', 'data:') - not synced"
+        },
+        "custom-ui-style.background.syncURL": {
+          "scope": "application",
+          "type": "string",
+          "description": "Full-screen background image URL (synced), supports variables like ${userHome} or ${env:VAR:fallback}. Lower priority than 'url'."
+        },
+        "custom-ui-style.background.opacity": {
+          "scope": "application",
+          "type": "number",
+          "description": "Background image opacity (0 to 1)",
+          "default": 0.9
+        },
+        "custom-ui-style.background.size": {
+          "scope": "application",
+          "type": "string",
+          "enum": [
+            "cover",
+            "contain"
+          ],
+          "description": "Background image size (e.g., 'cover', 'contain')",
+          "default": "cover"
+        },
+        "custom-ui-style.background.position": {
+          "scope": "application",
+          "type": "string",
+          "description": "Background image position",
+          "default": "center"
+        },
+        "custom-ui-style.external.loadStrategy": {
+          "scope": "application",
+          "type": "string",
+          "enum": [
+            "refetch",
+            "cache",
+            "disable"
+          ],
+          "enumDescriptions": [
+            "Force refetch while reloading",
+            "Skip refetch if nothing changed and all resources are fetched",
+            "Remove all resources"
+          ],
+          "description": "Strategy for loading external CSS or JS resources",
+          "default": "refetch"
+        },
+        "custom-ui-style.external.imports": {
+          "scope": "application",
+          "type": "array",
+          "description": "External CSS or JS resources; supports variables (${userHome}, ${env:VAR:fallback}) and protocols ('https://', 'file://')",
+          "items": {
+            "oneOf": [
+              {
+                "type": "string",
+                "pattern": "^(file://|https://).+\\.(css|js)$",
+                "description": "Path to local CSS or JS file (.js or .css); supports variables (${userHome}, ${env:VAR:fallback})"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "css",
+                      "js",
+                      "js-module"
+                    ]
+                  },
+                  "url": {
+                    "type": "string",
+                    "pattern": "^https:\\/\\/",
+                    "description": "URL to CSS or JS script (only 'https://' protocol)"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "custom-ui-style.stylesheet": {
+          "scope": "application",
+          "type": "object",
+          "description": "Custom CSS for the editor; supports nested selectors"
+        },
+        "custom-ui-style.extensions.enable": {
+          "scope": "application",
+          "type": "boolean",
+          "default": true,
+          "description": "Enable file patching in other extensions"
+        },
+        "custom-ui-style.extensions.config": {
+          "scope": "application",
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "filePath": {
+                  "type": "string",
+                  "description": "Relative path within the extension root"
+                },
+                "find": {
+                  "type": "string",
+                  "description": "String or RegExp to find (e.g., /test\\d+/)"
+                },
+                "replace": {
+                  "type": "string",
+                  "description": "Replacement string"
+                }
+              },
+              "required": [
+                "filePath",
+                "find",
+                "replace"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "description": "Configuration for patching extension files (key: extension ID, value: patch config)"
+        },
+        "custom-ui-style.webview.enable": {
+          "scope": "application",
+          "type": "boolean",
+          "default": true,
+          "description": "Enable style patching in webviews"
+        },
+        "custom-ui-style.webview.removeCSP": {
+          "scope": "application",
+          "type": "boolean",
+          "default": true,
+          "description": "Remove Content-Security-Policy restrictions in webviews"
+        },
+        "custom-ui-style.webview.monospaceSelector": {
+          "scope": "application",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Custom monospace selector for webviews"
+        },
+        "custom-ui-style.webview.sansSerifSelector": {
+          "scope": "application",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Custom sans-serif selector for webviews"
+        },
+        "custom-ui-style.webview.stylesheet": {
+          "scope": "application",
+          "type": "object",
+          "description": "Custom CSS for webviews; supports nested selectors"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "pnpm run typecheck && tsdown --minify --treeshake",
+    "dev": "tsdown --watch",
+    "prepare": "pnpm run update",
+    "update": "vscode-ext-gen --output src/generated/meta.ts",
+    "format": "eslint . --fix",
+    "vscode:prepublish": "pnpm run build",
+    "publish": "vsce publish --no-dependencies",
+    "pack": "vsce package --no-dependencies",
+    "typecheck": "tsc --noEmit",
+    "release": "pnpm run format && pnpm run build && bumpp --all",
+    "vscode:uninstall": "node ./dist/uninstall.js"
+  },
+  "devDependencies": {
+    "@subframe7536/eslint-config": "^1.3.2",
+    "@subframe7536/type-utils": "^0.2.0",
+    "@types/node": "^22.17.2",
+    "@types/vscode": "1.89.0",
+    "@vscode/vsce": "^3.6.0",
+    "atomically": "^2.0.3",
+    "bumpp": "^10.2.3",
+    "eslint": "^9.34.0",
+    "reactive-vscode": "0.2.6",
+    "tsdown": "^0.14.1",
+    "typescript": "^5.9.2",
+    "vscode-ext-gen": "^1.1.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@vscode/vsce-sign",
+      "esbuild",
+      "keytar"
+    ]
+  }
+}
