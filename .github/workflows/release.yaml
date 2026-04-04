@@ -97,7 +97,7 @@ jobs:
         if: ${{ matrix.vscode_arch == 'x64' }}
       - run: tar -czf package.tar.gz release
         if: ${{ matrix.vscode_arch == 'x64' }}
-      - uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v1
+      - uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe # v2.6.1
         if: ${{ matrix.vscode_arch == 'x64' }}
         with:
           draft: true
@@ -106,7 +106,7 @@ jobs:
       # Platform-specific release.
       - run: KEEP_MODULES=1 npm run release
       - run: npm run package
-      - uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v1
+      - uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe # v2.6.1
         with:
           draft: true
           files: ./release-packages/*
@@ -161,7 +161,7 @@ jobs:
       - run: npm run test:native
 
       - run: npm run package
-      - uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v1
+      - uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe # v2.6.1
         with:
           draft: true
           files: ./release-packages/*
