@@ -1,0 +1,41 @@
+{
+  "name": "shrinking-server-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for shrinking-server and self-hosted code-server workspaces.",
+  "homepage": "https://github.com/xgauravyaduvanshii/shrinking-server/tree/main/code-server/code-server-mcp",
+  "bugs": {
+    "url": "https://github.com/xgauravyaduvanshii/shrinking-server/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xgauravyaduvanshii/shrinking-server.git",
+    "directory": "code-server/code-server-mcp"
+  },
+  "author": "xgauravyaduvanshii <xgauravyaduvanshii@gmail.com>",
+  "type": "module",
+  "bin": {
+    "shrinking-server-mcp": "./build/src/index.js"
+  },
+  "scripts": {
+    "build": "rm -rf build && tsc",
+    "dev": "tsx src/index.ts",
+    "start": "node build/src/index.js",
+    "inspect": "npx @modelcontextprotocol/inspector node build/src/index.js",
+    "smoke": "tsx test/smoke.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "dotenv": "^16.4.7",
+    "node-fetch": "^3.3.2",
+    "tough-cookie": "^4.1.4",
+    "ws": "^8.18.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/tough-cookie": "^4.0.5",
+    "@types/ws": "^8.5.10",
+    "tsx": "^4.15.1",
+    "typescript": "^5.4.5"
+  }
+}

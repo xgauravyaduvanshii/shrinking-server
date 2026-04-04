@@ -1,0 +1,92 @@
+name: Publish shrinking-server
+
+on:
+  # Shows the manual trigger in GitHub UI
+  # helpful as a back-up in case the GitHub Actions Workflow fails
+  workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        required: true
+
+  release:
+    types: [released]
+
+# Cancel in-progress runs for pull requests when developers push
+# additional changes, and serialize builds in branches.
+# https://docs.github.com/en/actions/using-jobs/using-concurrency#example-using-concurrency-to-cancel-any-in-progress-job-or-run
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  npm:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ inputs.version || github.ref_name }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      NPM_ENVIRONMENT: "production"
+
+    steps:
+      - name: Set version to tag without leading v
+        run: |
+          echo "VERSION=${TAG#v}" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+
+      - uses: robinraju/release-downloader@daf26c55d821e836577a15f77d86ddc078948b05 # v1.12
+        with:
+          repository: ${{ github.repository }}
+          tag: ${{ env.TAG }}
+          fileName: "package.tar.gz"
+          out-file-path: "release-npm-package"
+
+      - run: tar -xzf release-npm-package/package.tar.gz
+      - run: |
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          pushd release
+          npm publish --tag latest --access public
+
+  docker:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      TAG: ${{ inputs.version || github.ref_name }}
+
+    steps:
+      - name: Set version to tag without leading v
+        run: |
+          echo "VERSION=${TAG#v}" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v6
+      - uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: robinraju/release-downloader@daf26c55d821e836577a15f77d86ddc078948b05 # v1.12
+        with:
+          repository: ${{ github.repository }}
+          tag: v${{ env.VERSION }}
+          fileName: "*.deb"
+          out-file-path: "release-packages"
+      - uses: robinraju/release-downloader@daf26c55d821e836577a15f77d86ddc078948b05 # v1.12
+        with:
+          repository: ${{ github.repository }}
+          tag: v${{ env.VERSION }}
+          fileName: "*.rpm"
+          out-file-path: "release-packages"
+
+      - run: npm run publish:docker
