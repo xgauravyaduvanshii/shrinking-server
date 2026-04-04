@@ -1,7 +1,7 @@
 import { ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 export function registerResources(server, ctx) {
     server.registerResource("server-info", "codeserver://server/info", {
-        title: "code-server info",
+        title: "shrinking-server info",
         mimeType: "application/json",
     }, async () => ({
         contents: [{

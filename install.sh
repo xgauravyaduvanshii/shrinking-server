@@ -1,24 +1,29 @@
 #!/bin/sh
 set -eu
 
-# code-server's automatic install script.
-# See https://coder.com/docs/code-server/latest/install
+# shrinking-server's automatic install script.
+# See $INSTALLER_REPO_URL
+
+INSTALLER_REPO_URL="https://github.com/xgauravyaduvanshii/shrinking-server"
+INSTALLER_RAW_URL="https://raw.githubusercontent.com/xgauravyaduvanshii/shrinking-server/main/code-server/install.sh"
+INSTALLER_ARCHIVE_URL="https://github.com/xgauravyaduvanshii/shrinking-server/archive/refs/heads/main.tar.gz"
 
 usage() {
   arg0="$0"
   if [ "$0" = sh ]; then
-    arg0="curl -fsSL https://code-server.dev/install.sh | sh -s --"
+    arg0="curl -fsSL $INSTALLER_RAW_URL | sh -s --"
   else
-    not_curl_usage="The latest script is available at https://code-server.dev/install.sh
+    not_curl_usage="The latest script is available at $INSTALLER_RAW_URL
 "
   fi
 
   cath << EOF
-Installs code-server.
+Installs shrinking-server.
 It tries to use the system package manager if possible.
-After successful installation it explains how to start using code-server.
+After successful installation it explains how to start using code-server
+and installs shrinking-server-mcp from $INSTALLER_REPO_URL when npm is available.
 
-Pass in user@host to install code-server on user@host over ssh.
+Pass in user@host to install shrinking-server on user@host over ssh.
 The remote host must have internet access.
 ${not_curl_usage-}
 Usage:
@@ -69,18 +74,19 @@ fall back to npm so on architectures without pre-built releases this will error.
 
 The installer will cache all downloaded assets into ~/.cache/code-server
 
-More installation docs are at https://coder.com/docs/code-server/latest/install
+  Project repository: $INSTALLER_REPO_URL
+  More installation docs are in $INSTALLER_REPO_URL
 EOF
 }
 
 echo_latest_version() {
   if [ "${EDGE-}" ]; then
-    version="$(curl -fsSL https://api.github.com/repos/coder/code-server/releases | awk 'match($0,/.*"html_url": "(.*\/releases\/tag\/.*)".*/)' | head -n 1 | awk -F '"' '{print $4}')"
+    version="$(curl -fsSL https://api.github.com/repos/xgauravyaduvanshii/shrinking-server/releases | awk 'match($0,/.*\"html_url\": \"(.*\\/releases\\/tag\\/.*)\".*/)' | head -n 1 | awk -F '\"' '{print $4}')"
   else
     # https://gist.github.com/lukechilds/a83e1d7127b78fef38c2914c4ececc3c#gistcomment-2758860
-    version="$(curl -fsSLI -o /dev/null -w "%{url_effective}" https://github.com/coder/code-server/releases/latest)"
+    version="$(curl -fsSLI -o /dev/null -w "%{url_effective}" $INSTALLER_REPO_URL/releases/latest)"
   fi
-  version="${version#https://github.com/coder/code-server/releases/tag/}"
+  version="${version#$INSTALLER_REPO_URL/releases/tag/}"
   version="${version#v}"
   echo "$version"
 }
@@ -134,6 +140,59 @@ EOF
 echo_coder_postinstall() {
   echoh
   echoh "Deploy code-server for your team with Coder: https://github.com/coder/coder"
+}
+
+echo_mcp_postinstall() {
+  echoh
+  cath << EOF
+shrinking-server-mcp has been installed.
+
+Files:
+  Project: $MCP_INSTALL_DIR
+  Launcher: $MCP_BIN_DIR/shrinking-server-mcp
+  Env template: $MCP_INSTALL_DIR/.env.example
+
+Next steps:
+  1. Copy the env template and adjust it for your server:
+       cp "$MCP_INSTALL_DIR/.env.example" "$MCP_INSTALL_DIR/.env"
+  2. Start the MCP server:
+       "$MCP_BIN_DIR/shrinking-server-mcp"
+
+Repository:
+  $INSTALLER_REPO_URL
+EOF
+}
+
+install_mcp() {
+  MCP_INSTALL_DIR="${MCP_INSTALL_DIR:-$HOME/.local/share/shrinking-server-mcp}"
+  MCP_BIN_DIR="${MCP_BIN_DIR:-$HOME/.local/bin}"
+
+  echoh
+  echoh "Installing shrinking-server-mcp from $INSTALLER_REPO_URL."
+
+  if ! command_exists npm; then
+    echoh "npm was not found, so shrinking-server-mcp could not be built automatically."
+    echoh "Install Node.js + npm, then run:"
+    echoh "  git clone $INSTALLER_REPO_URL"
+    echoh "  cd shrinking-server/code-server/code-server-mcp && npm install && npm run build"
+    return
+  fi
+
+  MCP_ARCHIVE_FILE="$CACHE_DIR/shrinking-server-main.tar.gz"
+  MCP_EXTRACT_DIR="$CACHE_DIR/shrinking-server-main"
+
+  fetch "$INSTALLER_ARCHIVE_URL" "$MCP_ARCHIVE_FILE"
+  sh_c rm -rf "$MCP_EXTRACT_DIR"
+  sh_c mkdir -p "$MCP_EXTRACT_DIR" "$MCP_BIN_DIR"
+  sh_c tar -xzf "$MCP_ARCHIVE_FILE" -C "$MCP_EXTRACT_DIR" --strip-components 1
+  sh_c rm -rf "$MCP_INSTALL_DIR"
+  sh_c mkdir -p "$(dirname "$MCP_INSTALL_DIR")"
+  sh_c cp -R "$MCP_EXTRACT_DIR/code-server/code-server-mcp" "$MCP_INSTALL_DIR"
+  sh_c "cd '$MCP_INSTALL_DIR' && npm install && npm run build"
+  sh_c "printf '%s\n' '#!/bin/sh' 'cd \"$MCP_INSTALL_DIR\"' 'exec node build/src/index.js \"\$@\"' > '$MCP_BIN_DIR/shrinking-server-mcp'"
+  sh_c chmod +x "$MCP_BIN_DIR/shrinking-server-mcp"
+
+  echo_mcp_postinstall
 }
 
 main() {
@@ -221,7 +280,7 @@ main() {
   if [ "${RSH_ARGS-}" ]; then
     RSH="${RSH-ssh}"
     echoh "Installing remotely with $RSH $RSH_ARGS"
-    curl -fsSL https://code-server.dev/install.sh | prefix "$RSH_ARGS" "$RSH" "$RSH_ARGS" sh -s -- "$ALL_FLAGS"
+    curl -fsSL "$INSTALLER_RAW_URL" | prefix "$RSH_ARGS" "$RSH" "$RSH_ARGS" sh -s -- "$ALL_FLAGS"
     return
   fi
 
@@ -248,6 +307,7 @@ main() {
   if [ "$METHOD" = standalone ]; then
     if has_standalone; then
       install_standalone
+      install_mcp
       echo_coder_postinstall
       exit 0
     else
@@ -293,6 +353,7 @@ main() {
       ;;
   esac
 
+  install_mcp
   echo_coder_postinstall
 }
 
@@ -359,7 +420,7 @@ install_deb() {
   echoh "Installing v$VERSION of the $ARCH deb package from GitHub."
   echoh
 
-  fetch "https://github.com/coder/code-server/releases/download/v$VERSION/code-server_${VERSION}_$ARCH.deb" \
+  fetch "$INSTALLER_REPO_URL/releases/download/v$VERSION/code-server_${VERSION}_$ARCH.deb" \
     "$CACHE_DIR/code-server_${VERSION}_$ARCH.deb"
   sudo_sh_c dpkg -i "$CACHE_DIR/code-server_${VERSION}_$ARCH.deb"
 
@@ -370,7 +431,7 @@ install_rpm() {
   echoh "Installing v$VERSION of the $ARCH rpm package from GitHub."
   echoh
 
-  fetch "https://github.com/coder/code-server/releases/download/v$VERSION/code-server-$VERSION-$ARCH.rpm" \
+  fetch "$INSTALLER_REPO_URL/releases/download/v$VERSION/code-server-$VERSION-$ARCH.rpm" \
     "$CACHE_DIR/code-server-$VERSION-$ARCH.rpm"
   sudo_sh_c rpm -U "$CACHE_DIR/code-server-$VERSION-$ARCH.rpm"
 
@@ -396,7 +457,7 @@ install_standalone() {
   echoh "Installing v$VERSION of the $ARCH release from GitHub."
   echoh
 
-  fetch "https://github.com/coder/code-server/releases/download/v$VERSION/code-server-$VERSION-$OS-$ARCH.tar.gz" \
+  fetch "$INSTALLER_REPO_URL/releases/download/v$VERSION/code-server-$VERSION-$OS-$ARCH.tar.gz" \
     "$CACHE_DIR/code-server-$VERSION-$OS-$ARCH.tar.gz"
 
   # -w only works if the directory exists so try creating it first. If this

@@ -52,11 +52,11 @@ async function main(): Promise<void> {
   heartbeat.start()
 
   const server = new McpServer({
-    name: "code-server-mcp",
+    name: "shrinking-server-mcp",
     version: "1.0.0",
   }, {
     instructions: `
-This MCP controls a code-server workspace.
+This MCP controls a shrinking-server workspace.
 Use absolute paths whenever possible.
 For interactive work use terminal_create_session and terminal_send_to_session.
 Write and exec operations are blocked when READONLY_MODE=true.
@@ -97,14 +97,14 @@ Write and exec operations are blocked when READONLY_MODE=true.
       await transport.handleRequest(req, res, body)
     })
     listener.listen(config.httpPort, () => {
-      logger.info("code-server-mcp HTTP transport listening", { port: config.httpPort })
+      logger.info("shrinking-server-mcp HTTP transport listening", { port: config.httpPort })
     })
     return
   }
 
   const transport = new StdioServerTransport()
   await server.connect(transport)
-  logger.info("code-server-mcp stdio transport ready", { workspace: config.workspaceRoot })
+  logger.info("shrinking-server-mcp stdio transport ready", { workspace: config.workspaceRoot })
 }
 
 main().catch((error) => {

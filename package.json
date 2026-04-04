@@ -1,13 +1,14 @@
 {
-  "name": "code-server",
+  "name": "shrinking-server",
   "license": "MIT",
   "version": "0.0.0",
-  "description": "Run VS Code on a remote server.",
-  "homepage": "https://github.com/coder/code-server",
+  "description": "Run shrinking-server, a browser-hosted VS Code fork, on a remote server.",
+  "homepage": "https://github.com/xgauravyaduvanshii/shrinking-server",
   "bugs": {
-    "url": "https://github.com/coder/code-server/issues"
+    "url": "https://github.com/xgauravyaduvanshii/shrinking-server/issues"
   },
-  "repository": "https://github.com/coder/code-server",
+  "repository": "https://github.com/xgauravyaduvanshii/shrinking-server",
+  "author": "xgauravyaduvanshii <xgauravyaduvanshii@gmail.com>",
   "scripts": {
     "clean": "./ci/build/clean.sh",
     "build": "./ci/build/build-code-server.sh",

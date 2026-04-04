@@ -3,7 +3,7 @@ import { ToolContext } from "../context.js"
 
 export function registerResources(server: McpServer, ctx: ToolContext): void {
   server.registerResource("server-info", "codeserver://server/info", {
-    title: "code-server info",
+    title: "shrinking-server info",
     mimeType: "application/json",
   }, async () => ({
     contents: [{

@@ -1,14 +1,14 @@
-name: "code-server"
+name: "shrinking-server"
 arch: "${NFPM_ARCH}"
 platform: "linux"
 version: "v${VERSION}"
 section: "devel"
 priority: "optional"
-maintainer: "Joe Previte <joe@coder.com>"
+maintainer: "xgauravyaduvanshii <xgauravyaduvanshii@gmail.com>"
 description: |
-  Run VS Code in the browser.
-vendor: "Coder"
-homepage: "https://github.com/coder/code-server"
+  Run shrinking-server in the browser.
+vendor: "xgauravyaduvanshii"
+homepage: "https://github.com/xgauravyaduvanshii/shrinking-server"
 license: "MIT"
 
 contents:

@@ -1,10 +1,10 @@
-# code-server-mcp
+# shrinking-server-mcp
 
-`code-server-mcp` is a standalone MCP server that gives AI agents a powerful control layer for a self-hosted `code-server` environment. It can read and write files, run terminal commands, manage git, search a workspace, inspect server health, expose useful MCP resources, and optionally attach to a live running code-server window through native socket, UI terminal, and LSP bridges.
+`shrinking-server-mcp` is a standalone MCP server that gives AI agents a powerful control layer for a self-hosted `shrinking-server` environment. It can read and write files, run terminal commands, manage git, search a workspace, inspect server health, expose useful MCP resources, and optionally attach to a live running server window through native socket, UI terminal, and LSP bridges.
 
 ## What It Does
 
-- Connects to `code-server` with password, token, or unauthenticated local mode
+- Connects to `shrinking-server` with password, token, or unauthenticated local mode
 - Exposes filesystem, terminal, editor, search, git, extension, and server tools over MCP
 - Adds optional Phase 2 bridges:
   - native socket bridge for real `editor_open_file`, live editor status, and clipboard write
@@ -68,7 +68,7 @@ Add this to Claude Desktop config:
 ```json
 {
   "mcpServers": {
-    "code-server-mcp": {
+    "shrinking-server-mcp": {
       "command": "node",
       "args": ["/home/ubuntu/flyingdarkdev-server/code-server/code-server-mcp/build/src/index.js"],
       "cwd": "/home/ubuntu/flyingdarkdev-server/code-server/code-server-mcp",
@@ -106,7 +106,7 @@ Then point your MCP-capable agent at:
 ## Live Bridge Setup
 
 - Native socket:
-  - `code-server` registers existing-window sockets automatically.
+  - `shrinking-server` registers existing-window sockets automatically.
   - If MCP cannot discover the socket, set `VSCODE_IPC_HOOK_CLI=/tmp/vscode-ipc-....sock`.
   - `bridge_status` reports whether the native socket is attached.
 - UI terminal WebSocket:
@@ -137,9 +137,9 @@ npm run smoke
 
 ## Notes
 
-- Filesystem and terminal tools are designed to run on the same host as `code-server`
+- Filesystem and terminal tools are designed to run on the same host as `shrinking-server`
 - `editor_open_file` now uses the native existing-window socket when available and degrades cleanly when it is not
-- `clipboard_write` uses the native socket; `clipboard_read` is best-effort and may report unsupported depending on the code-server build
+- `clipboard_write` uses the native socket; `clipboard_read` is best-effort and may report unsupported depending on the server build
 - `terminal_ui_*` tools depend on the code-server terminal WebSocket endpoint and degrade when the endpoint is unavailable
 - `lsp_*` tools spawn local language servers directly on the host and do not depend on undocumented browser RPC
 - Extension install and uninstall use the code-server CLI; enable and disable use folder-level toggling in the extensions directory

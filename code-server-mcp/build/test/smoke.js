@@ -21,7 +21,7 @@ async function run() {
             VSCODE_IPC_HOOK_CLI: "",
         },
     });
-    const client = new Client({ name: "code-server-mcp-smoke", version: "1.0.0" });
+    const client = new Client({ name: "shrinking-server-mcp-smoke", version: "1.0.0" });
     await client.connect(transport);
     const workspace = process.env.CODE_SERVER_WORKSPACE ?? projectRoot;
     const smokeFile = path.join(workspace, ".mcp-smoke.txt");

@@ -72,19 +72,19 @@ main() {
     "enableTelemetry": true,
     "quality": "stable",
     "codeServerVersion": "$VERSION",
-    "nameShort": "code-server",
-    "nameLong": "code-server",
+    "nameShort": "shrinking-server",
+    "nameLong": "shrinking-server",
     "applicationName": "code-server",
     "dataFolderName": ".code-server",
     "win32MutexName": "codeserver",
-    "licenseUrl": "https://github.com/coder/code-server/blob/main/LICENSE",
+    "licenseUrl": "https://github.com/xgauravyaduvanshii/shrinking-server/blob/main/code-server/LICENSE",
     "win32DirName": "code-server",
     "win32NameVersion": "code-server",
     "win32AppUserModelId": "coder.code-server",
     "win32ShellNameShort": "c&ode-server",
     "darwinBundleIdentifier": "com.coder.code.server",
     "linuxIconName": "com.coder.code.server",
-    "reportIssueUrl": "https://github.com/coder/code-server/issues/new",
+    "reportIssueUrl": "https://github.com/xgauravyaduvanshii/shrinking-server/issues/new",
     "documentationUrl": "https://go.microsoft.com/fwlink/?LinkID=533484#vscode",
     "keyboardShortcutsUrlMac": "https://go.microsoft.com/fwlink/?linkid=832143",
     "keyboardShortcutsUrlLinux": "https://go.microsoft.com/fwlink/?linkid=832144",
@@ -101,7 +101,7 @@ main() {
       "github.copilot", "github.copilot-chat"
     ],
     "aiConfig": {
-      "ariaKey": "code-server"
+      "ariaKey": "shrinking-server"
     }
   }
 EOF
